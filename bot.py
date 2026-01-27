@@ -5,8 +5,8 @@ import os
 
 # ===== LOAD ENV VARIABLES =====
 DISCORD_TOKEN = os.environ["DISCORD_TOKEN"]
-ROBLOX_USER_ID = int(os.environ["4064551172"])
-CHANNEL_ID = int(os.environ["1273004876040900691"])
+ROBLOX_USER_ID = int(os.environ["ROBLOX_USER_ID"])
+CHANNEL_ID = int(os.environ["CHANNEL_ID"])
 # ==============================
 
 # dummy placeholder Discord user IDs (replace later if you want)
@@ -63,3 +63,4 @@ async def on_ready():
     client.loop.create_task(check_roblox_status())
 
 client.run(DISCORD_TOKEN)
+
