@@ -1,49 +1,65 @@
 import discord
 import requests
 import asyncio
+import os
 
-# ====== CONFIG ======
-DISCORD_TOKEN = "MTQ2NTgxMTEyNzA1MjAwOTc0NQ.G-MiDE.Yg5csObvNz_5NeOZ0OYRKKCkz5FXCrUBiOfES0"
+# ===== LOAD ENV VARIABLES =====
+DISCORD_TOKEN = os.environ["DISCORD_TOKEN"]
+ROBLOX_USER_ID = int(os.environ["4064551172"])
+CHANNEL_ID = int(os.environ["1273004876040900691"])
+# ==============================
 
-ROBLOX_USER_ID = 4064551172
-CHANNEL_ID = 1273004876040900691
-
+# dummy placeholder Discord user IDs (replace later if you want)
 PING_USERS = [
-    1273004876040900691,         # Discord user ID 1
-    528285160383447041,         # Discord user ID 2
-    1001310599071936603          # Discord user ID 3
+    123456789012345678,
+    987654321098765432,
+    555666777888999000
 ]
-# ====================
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 
-last_status = False  # False = offline, True = online
+last_presence = -1
+# presence values:
+# 0 = offline
+# 1 = online
+# 2 = in game
+# 3 = studio
 
 async def check_roblox_status():
-    global last_status
+    global last_presence
     await client.wait_until_ready()
     channel = client.get_channel(CHANNEL_ID)
 
     while not client.is_closed():
-        response = requests.post(
-            "https://presence.roblox.com/v1/presence/users",
-            json={"userIds": [ROBLOX_USER_ID]}
-        )
+        try:
+            r = requests.post(
+                "https://presence.roblox.com/v1/presence/users",
+                json={"userIds": [ROBLOX_USER_ID]},
+                timeout=10
+            )
 
-        presence = response.json()["userPresences"][0]["userPresenceType"]
-        online = presence != 0  # 0 = offline
-
-        if online and not last_status:
+            presence = r.json()["userPresences"][0]["userPresenceType"]
             mentions = " ".join(f"<@{uid}>" for uid in PING_USERS)
-            await channel.send(f"{mentions} Roblox account is ONLINE")
 
-        last_status = online
+            # went ONLINE
+            if presence == 1 and last_presence != 1:
+                await channel.send(f"Nathan is online {mentions}")
+
+            # started PLAYING
+            if presence == 2 and last_presence != 2:
+                await channel.send(f"Nathan is playing {mentions}")
+
+            last_presence = presence
+
+        except Exception as e:
+            print("Roblox check error:", e)
+
         await asyncio.sleep(60)  # check every 60 seconds
 
 @client.event
 async def on_ready():
-    print("Bot is running")
+    print("Bot running")
     client.loop.create_task(check_roblox_status())
 
 client.run(DISCORD_TOKEN)
