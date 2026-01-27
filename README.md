@@ -1,0 +1,1 @@
+so this is just a fun thing we made to track a friend and just target him whenever he joins games for fun,  personally i dont reccomend using this code because its poorly made and also need it to host on a cloud service to keep it 24/7 and most of them cost
