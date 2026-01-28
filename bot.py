@@ -11,9 +11,9 @@ CHANNEL_ID = int(os.environ["CHANNEL_ID"])
 
 # dummy placeholder Discord user IDs (replace later if you want)
 PING_USERS = [
-    123456789012345678,
-    987654321098765432,
-    555666777888999000
+    528285160383447041,
+    1001310599071936603,
+    692072713770106993
 ]
 
 intents = discord.Intents.default()
@@ -63,4 +63,5 @@ async def on_ready():
     client.loop.create_task(check_roblox_status())
 
 client.run(DISCORD_TOKEN)
+
 
